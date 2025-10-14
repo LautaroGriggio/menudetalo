@@ -5,7 +5,7 @@ import utiles.Render;
 
 public class Imagen {
     private Texture t;
-    private Sprite s;
+    public Sprite s;
 
     public Imagen(String ruta){
         t = new Texture(ruta);

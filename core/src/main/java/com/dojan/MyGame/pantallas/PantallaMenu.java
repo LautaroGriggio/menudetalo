@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.dojan.MyGame.MyGame;
 import com.dojan.MyGame.io.Entradas;
 import elementos.Imagen;
 import elementos.Texto;
@@ -81,8 +82,11 @@ public class PantallaMenu implements Screen {
 
         if (entradas.isEnter()) {
             if (opc == 0) {
-                System.out.println("Llamar al juego");
-            } else if (opc == 1) {
+                // Ir a pantalla de elegir auto
+                MyGame game = (MyGame) Gdx.app.getApplicationListener();
+                game.setScreen(new PantallaElegirAuto(game));
+            }
+            else if (opc == 1) {
                 System.out.println("Llamar al juego online");
             } else if (opc == 2) {
                 System.out.println("Llamar a opciones");
