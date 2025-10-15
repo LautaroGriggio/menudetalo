@@ -13,29 +13,31 @@ import utiles.Render;
 
 public class PantallaMenu implements Screen {
 
-    Imagen fondo;
-    SpriteBatch b;
+    private MyGame game; // Igual que en PantallaElegirAuto
+    private Imagen fondo;
+    private SpriteBatch b;
 
-    Texto[] opciones = new Texto[4];
-    String[] textos = {" Jugar", "Online", "Opciones", "Salir"};
-
-    int opc = 0;
+    private Texto[] opciones = new Texto[4];
+    private String[] textos = {"Jugar", "Online", "Opciones", "Salir"};
+    private int opc = 0;
     public float tiempo = 0;
 
-    Entradas entradas = new Entradas(this);
+    private Entradas entradas;
 
     @Override
     public void show() {
+        b = Render.batch;
+        game = (MyGame) Gdx.app.getApplicationListener(); // Inicializamos game
+
         fondo = new Imagen(Recursos.FONDOMENU);
-        // Ajusta la imagen al tamaño real de la ventana
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        b = Render.batch;
-
+        entradas = new Entradas(this);
         Gdx.input.setInputProcessor(entradas);
 
         int startY = 400;
         int gap = 90;
+
         for (int i = 0; i < opciones.length; i++) {
             opciones[i] = new Texto(Recursos.FUENTEMENU, 80, Color.WHITE);
             opciones[i].setTexto(textos[i]);
@@ -45,61 +47,53 @@ public class PantallaMenu implements Screen {
 
     @Override
     public void render(float delta) {
-        // Actualiza el tamaño del fondo por si cambia la ventana
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        Render.limpiarPantalla(0,0,0);
 
         b.begin();
         fondo.dibujar();
+
+        // Dibujar opciones y colorear la seleccion
         for (int i = 0; i < opciones.length; i++) {
+            if (i == opc) opciones[i].setColor(Color.RED);
+            else opciones[i].setColor(Color.WHITE);
+
             opciones[i].dibujar();
         }
+
         b.end();
 
         tiempo += delta;
 
-        if (entradas.isAbajo()) {
-            if (tiempo > 0.09f) {
-                tiempo = 0;
-                opc++;
-                if (opc > 3) opc = 0;
-            }
+        // Controles arriba/abajo
+        if (entradas.isAbajo() && tiempo > 0.09f) {
+            tiempo = 0;
+            opc++;
+            if (opc > 3) opc = 0;
         }
-        if (entradas.isArriba()) {
-            if (tiempo > 0.09f) {
-                tiempo = 0;
-                opc--;
-                if (opc < 0) opc = 3;
-            }
+        if (entradas.isArriba() && tiempo > 0.09f) {
+            tiempo = 0;
+            opc--;
+            if (opc < 0) opc = 3;
         }
 
-        for (int i = 0; i < opciones.length; i++) {
-            if (i == opc) {
-                opciones[i].setColor(Color.RED);
-            } else {
-                opciones[i].setColor(Color.WHITE);
-            }
-        }
-
+        // Confirmar selección
         if (entradas.isEnter()) {
             if (opc == 0) {
-                // Ir a pantalla de elegir auto
-                MyGame game = (MyGame) Gdx.app.getApplicationListener();
                 game.setScreen(new PantallaElegirAuto(game));
-            }
-            else if (opc == 1) {
-                MyGame game = (MyGame) Gdx.app.getApplicationListener();
+            } else if (opc == 1) {
                 game.setScreen(new PantallaOnline(game));
             } else if (opc == 2) {
-                System.out.println("Llamar a opciones");
+                game.setScreen(new PantallaElegirModo(game)); // NUEVA pantalla de modos
             } else if (opc == 3) {
-                System.out.println("Salir del juego");
                 Gdx.app.exit();
             }
         }
     }
 
-    @Override public void resize(int width, int height) {
-        // Actualizo también acá por si se cambia el tamaño
+    @Override
+    public void resize(int width, int height) {
         fondo.setSize(width, height);
     }
 

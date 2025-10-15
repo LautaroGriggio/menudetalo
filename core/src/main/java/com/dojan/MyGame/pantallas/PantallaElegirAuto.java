@@ -8,9 +8,7 @@ import com.dojan.MyGame.MyGame;
 import elementos.Imagen;
 import utiles.Render;
 
-// IMPORT NECESARIO PARA QUE FUNCIONE LA TRANSICIÓN
-import com.dojan.MyGame.pantallas.PantallaElegirMapa;
-import com.dojan.MyGame.pantallas.PantallaMenu;
+
 
 public class PantallaElegirAuto implements Screen {
 
