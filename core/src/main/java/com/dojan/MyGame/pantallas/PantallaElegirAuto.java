@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import elementos.Imagen;
-import utiles.Recursos;
 import utiles.Render;
 import com.dojan.MyGame.MyGame;
 
@@ -30,7 +29,7 @@ public class PantallaElegirAuto implements Screen {
     public void show() {
         b = Render.batch;
 
-        // Fondo (ajusta el nombre según tu imagen real)
+        // Fondo
         fondo = new Imagen("fondos/fondoAutos.png");
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -52,13 +51,17 @@ public class PantallaElegirAuto implements Screen {
         fondo.dibujar();
 
         Imagen actual = autos[indiceAuto];
-        float x = (Gdx.graphics.getWidth() - actualWidth(actual)) / 2;
-        float y = (Gdx.graphics.getHeight() - actualHeight(actual)) / 2;
-        actual.setSize(actualWidth(actual), actualHeight(actual));
-        actual.s.draw(b); // o actual.dibujar() si usás ese método
+        float ancho = actualWidth(actual);
+        float alto = actualHeight(actual);
+        float x = (Gdx.graphics.getWidth() - ancho) / 2;
+        float y = (Gdx.graphics.getHeight() - alto) / 2;
+
+        actual.setSize(ancho, alto);
+        actual.s.setPosition(x, y);
+        actual.dibujar();
         b.end();
 
-        // Controles
+        // Controles izquierda / derecha
         if (tiempo > 0.15f) {
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 indiceAuto++;
@@ -72,6 +75,12 @@ public class PantallaElegirAuto implements Screen {
             }
         }
 
+        // Confirmar selección (ENTER)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+
+            game.setScreen(new PantallaElegirMapa(game)); // 👈 transiciona a elegir mapa
+        }
+
         // Volver al menú
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.setScreen(new PantallaMenu());
@@ -79,7 +88,6 @@ public class PantallaElegirAuto implements Screen {
     }
 
     private float actualWidth(Imagen img) {
-        // Escala automática para que no ocupe toda la pantalla
         return Gdx.graphics.getWidth() * 0.5f;
     }
 
@@ -95,10 +103,5 @@ public class PantallaElegirAuto implements Screen {
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override
-    public void dispose() {
-        // Libera recursos de imágenes si no se reutilizan
-        // fondo.dispose(); // si implementás dispose() en Imagen
-    }
+    @Override public void dispose() {}
 }
-

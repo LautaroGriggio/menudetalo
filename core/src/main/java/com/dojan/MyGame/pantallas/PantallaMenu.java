@@ -87,7 +87,8 @@ public class PantallaMenu implements Screen {
                 game.setScreen(new PantallaElegirAuto(game));
             }
             else if (opc == 1) {
-                System.out.println("Llamar al juego online");
+                MyGame game = (MyGame) Gdx.app.getApplicationListener();
+                game.setScreen(new PantallaOnline(game));
             } else if (opc == 2) {
                 System.out.println("Llamar a opciones");
             } else if (opc == 3) {
