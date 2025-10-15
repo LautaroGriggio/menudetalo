@@ -3,22 +3,23 @@ package com.dojan.MyGame.pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.dojan.MyGame.MyGame;
+import elementos.Texto;
 import elementos.Imagen;
 import utiles.Render;
+import com.dojan.MyGame.pantallas.PantallaMenu;
 
 public class PantallaElegirMapa implements Screen {
 
-    private MyGame game; // referencia al juego (igual que en tus otras pantallas)
+    private MyGame game;
     private SpriteBatch b;
     private Imagen fondo;
 
-    // Array de mapas
-    private Imagen[] mapas;
-    private int indiceMapa = 0;
-
-    // Tiempo para controlar el cambio (evita repetición muy rápida)
+    private Texto[] opciones = new Texto[2];
+    private String[] textos = {"2WD", "4WD"};
+    private int opc = 0; // indica cuál opción está seleccionada
     private float tiempo = 0;
 
     public PantallaElegirMapa(MyGame game) {
@@ -29,75 +30,63 @@ public class PantallaElegirMapa implements Screen {
     public void show() {
         b = Render.batch;
 
-        // Fondo (ajustá la ruta si tu archivo se llama distinto)
+        // Fondo
         fondo = new Imagen("fondos/fondoMapas.png");
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Cargar mapas (rutas de ejemplo - pon tus archivos en assets/mapas/)
-        mapas = new Imagen[]{
-                new Imagen("mapas/mapa1.png"),
-                new Imagen("mapas/mapa2.png"),
-                new Imagen("mapas/mapa3.png")
-        };
+        // Crear opciones de texto
+        int startX = Gdx.graphics.getWidth() / 2 - 150; // posición inicial del primer texto
+        int y = Gdx.graphics.getHeight() / 2;
+        int gap = 300; // separación entre opciones
 
-        // Asegurarse que el sprite del mapa inicial esté centrado al mostrarse
-        centrarMapaActual();
-    }
-
-    private void centrarMapaActual() {
-        Imagen actual = mapas[indiceMapa];
-        float ancho = Gdx.graphics.getWidth() * 0.6f;
-        float alto = Gdx.graphics.getHeight() * 0.6f;
-        float x = (Gdx.graphics.getWidth() - ancho) / 2f;
-        float y = (Gdx.graphics.getHeight() - alto) / 2f;
-        actual.setSize(ancho, alto);
-        actual.s.setPosition(x, y);
+        for (int i = 0; i < opciones.length; i++) {
+            opciones[i] = new Texto("fuentes/sewer.ttf", 80, Color.WHITE);
+            opciones[i].setTexto(textos[i]);
+            opciones[i].setPosition(startX + i * gap, y);
+        }
     }
 
     @Override
     public void render(float delta) {
-        Render.limpiarPantalla(0, 0, 0);
+        Render.limpiarPantalla(0,0,0);
         tiempo += delta;
 
         b.begin();
         fondo.dibujar();
 
-        // Dibujo del mapa actual (centrado)
-        Imagen actual = mapas[indiceMapa];
-        // en cada frame nos aseguramos que el tamaño/posición sean correctos
-        float ancho = Gdx.graphics.getWidth() * 0.6f;
-        float alto = Gdx.graphics.getHeight() * 0.6f;
-        float x = (Gdx.graphics.getWidth() - ancho) / 2f;
-        float y = (Gdx.graphics.getHeight() - alto) / 2f;
-        actual.setSize(ancho, alto);
-        actual.s.setPosition(x, y);
-        actual.dibujar();
-
+        // Dibujar opciones con color según selección
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == opc) {
+                opciones[i].setColor(Color.RED); // opción seleccionada
+            } else {
+                opciones[i].setColor(Color.WHITE); // opción no seleccionada
+            }
+            opciones[i].dibujar();
+        }
         b.end();
 
-        // Controles: usar isKeyJustPressed para un único cambio por pulsación
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            indiceMapa++;
-            if (indiceMapa >= mapas.length) indiceMapa = 0;
-            tiempo = 0;
-            centrarMapaActual();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            indiceMapa--;
-            if (indiceMapa < 0) indiceMapa = mapas.length - 1;
-            tiempo = 0;
-            centrarMapaActual();
+        // Controles izquierda/derecha para moverse entre opciones
+        if (tiempo > 0.15f) {
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                opc++;
+                if (opc >= opciones.length) opc = 0;
+                tiempo = 0;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                opc--;
+                if (opc < 0) opc = opciones.length - 1;
+                tiempo = 0;
+            }
         }
 
         // Confirmar selección (ENTER)
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            System.out.println("Mapa seleccionado: " + indiceMapa);
-            // Aquí podrías llamar a la pantalla de juego, por ejemplo:
-            // game.setScreen(new PantallaJuego(game, indiceMapa));
+            System.out.println("Opción de tracción seleccionada: " + textos[opc]);
+            // Aquí podrías iniciar la pantalla del juego y pasar la opción
+            // game.setScreen(new PantallaJuego(game, textos[opc]));
         }
 
-        // Volver al menú (ESCAPE)
+        // Volver al menú principal (ESCAPE)
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.setScreen(new PantallaMenu());
         }
@@ -105,20 +94,11 @@ public class PantallaElegirMapa implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        // Actualiza el tamaño del fondo si se redimensiona
         fondo.setSize(width, height);
-        // re-centrar el mapa actual
-        centrarMapaActual();
     }
 
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-    @Override
-    public void dispose() {
-        // Si implementás dispose() en Imagen podés liberar recursos acá.
-        // Por ahora no llamo nada porque en tu clase Imagen no hay dispose().
-    }
+    @Override public void dispose() {}
 }
-
-

@@ -4,13 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.dojan.MyGame.MyGame;
 import elementos.Imagen;
 import utiles.Render;
-import com.dojan.MyGame.MyGame;
+
+// IMPORT NECESARIO PARA QUE FUNCIONE LA TRANSICIÓN
+import com.dojan.MyGame.pantallas.PantallaElegirMapa;
+import com.dojan.MyGame.pantallas.PantallaMenu;
 
 public class PantallaElegirAuto implements Screen {
 
-    private MyGame game; // referencia al juego para cambiar de pantalla
+    private MyGame game; // referencia al juego
     private SpriteBatch b;
     private Imagen fondo;
 
@@ -33,7 +37,7 @@ public class PantallaElegirAuto implements Screen {
         fondo = new Imagen("fondos/fondoAutos.png");
         fondo.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Cargar autos (rutas de ejemplo)
+        // Cargar autos
         autos = new Imagen[]{
                 new Imagen("autos/auto1.png"),
                 new Imagen("autos/auto2.png"),
@@ -75,13 +79,12 @@ public class PantallaElegirAuto implements Screen {
             }
         }
 
-        // Confirmar selección (ENTER)
+        // Confirmar selección (ENTER) → pasa a PantallaElegirMapa
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-
-            game.setScreen(new PantallaElegirMapa(game)); // 👈 transiciona a elegir mapa
+            game.setScreen(new PantallaElegirMapa(game));
         }
 
-        // Volver al menú
+        // Volver al menú (ESCAPE)
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             game.setScreen(new PantallaMenu());
         }
